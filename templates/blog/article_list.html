@@ -1,0 +1,70 @@
+
+{% for article in page_obj %}
+<div class="col-md-4 mb-4">
+    <div class="card h-100 shadow-sm" data-aos="flip-left">
+        <img src="{{ article.get_image.image.url }}" alt="{{ article.title }} banner" class="card-img-top img-fluid">
+        <div class="card-body">
+            <h5 class="card-title">
+                <a href="{% url "details" article.id %}" :class="theme === 'dark'?'text-white':'text-dark'">
+                    {{ article.title|slice:":41" }}...
+                </a>
+            </h5>
+            {% comment %} <hr class="my-3" style="border: 1px solid #e0e0e0;"> <!-- Styled HR --> {% endcomment %}
+            <hr class="custom-hr my-3">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <p class="mb-0">
+                    <i class="bi bi-calendar"></i> {{ article.created_at|date:"F j, Y" }}
+                </p>
+                <div class="d-flex align-items-center">
+                    <img src="{{ article.author.profile_picture.url }}" alt="{{ article.author.username }}" class="rounded-circle me-2" style="width: 30px; height: 30px;">
+                    <a href="{% url "profile" article.author.username %}">{{ article.author.username }}</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<ul class="pagination justify-content-center mt-4" x-data="{ activePage: {{ page_obj.number }} }">
+    {% if page_obj.has_previous %}
+        <li class="page-item" :class="{ 'disabled': activePage === 1 }">
+            <a href="?page=1" class="page-link" 
+               hx-get="?page=1" hx-target="#article-list" hx-swap="innerHTML"
+               @click="activePage = 1">&laquo; First</a>
+        </li>
+        <li class="page-item" :class="{ 'disabled': !page_obj.has_previous }">
+            <a href="?page={{ page_obj.previous_page_number }}" class="page-link" 
+               hx-get="?page={{ page_obj.previous_page_number }}" hx-target="#article-list" hx-swap="innerHTML"
+               @click="activePage = {{ page_obj.previous_page_number }}">Previous</a>
+        </li>
+    {% else %}
+        <li class="page-item disabled">
+            <a href="#" class="page-link">Previous</a>
+        </li>
+    {% endif %}
+
+    {% for num in page_obj.paginator.page_range %}
+        <li class="page-item" :class="{ 'active': activePage === {{ num }} }">
+            <a href="?page={{ num }}" class="page-link" 
+               hx-get="?page={{ num }}" hx-target="#article-list" hx-swap="innerHTML"
+               @click="activePage = {{ num }}">{{ num }}</a>
+        </li>
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+        <li class="page-item">
+            <a href="?page={{ page_obj.next_page_number }}" class="page-link" 
+               hx-get="?page={{ page_obj.next_page_number }}" hx-target="#article-list" hx-swap="innerHTML"
+               @click="activePage = {{ page_obj.next_page_number }}">Next</a>
+        </li>
+        <li class="page-item">
+            <a href="?page={{ page_obj.paginator.num_pages }}" class="page-link" 
+               hx-get="?page={{ page_obj.paginator.num_pages }}" hx-target="#article-list" hx-swap="innerHTML"
+               @click="activePage = {{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+        </li>
+    {% else %}
+        <li class="page-item disabled">
+            <a href="#" class="page-link">Next</a>
+        </li>
+    {% endif %}
+</ul>

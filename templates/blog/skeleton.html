@@ -1,0 +1,153 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReviSphere - {% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'vendor/bootstrap/css/bootstrap.min.css'%}">
+    <link rel="stylesheet" href="{% static "vendor/aos/aos.css" %}">
+    <link rel="stylesheet" href="{% static "vendor/bootstrap-icons/font/bootstrap-icons.css" %}">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+        footer a{
+            transition: transform 0.3s ease; /* Smooth transition */
+            display: inline-block;
+            transform-origin: left;
+            text-decoration: None;
+        }
+
+        footer a:hover {
+            transform: scale(1.1);
+        }
+    </style>
+    {% block head_scripts %}{% endblock %}
+</head>
+<body x-data="{theme: 'dark'}" :data-bs-theme="theme">
+    <header data-aos="fade-up" data-aos-delay="150">
+        <nav class="navbar navbar-expand-md bg-body-tertiary">
+            <div class="container-fluid">
+                <a href="{% url 'index' %}" class="navbar-brand mb-0 h1">ReviSphere</a>
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item active">
+                        <a href="{% url 'post' %}" class="nav-link">Post</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'list' %}" class="nav-link">List</a>
+                    </li>
+                </ul>
+
+                <!-- Search Bar-->
+                <div class="d-flex justify-content-center flex-grow-1 mx-2">
+                    <form action="{% url "search" %}" method="get" class="d-flex" role="search" style="max-width: 500px; width: 100%;">
+                        <div class="input-group">
+                            <input class="form-control" type="search" name="name" placeholder="Search for Articles!" aria-label="Search">
+                            <select class="form-select me-2" name="tag" style="max-width: 150px;">
+                                <option selected value="">Select Tag</option>
+                                {% for tag in tags %}
+                                    <option value="{{tag.name}}">{{tag.name}}</option>
+                                {% endfor %}
+                            </select>
+                            <button class="btn btn-outline-success" type="submit">Search</button>     
+                        </div>       
+                    </form>
+                </div>
+                
+                <!-- Extra Details-->
+                <div class="d-flex align-items-center">
+                    <a href="https://github.com/harkais88" class="ms-2 me-2" target="_blank">
+                        <i class="bi bi-github"></i>
+                    </a>
+                    <button @click="theme = (theme === 'dark' ? 'light' : 'dark')" class="btn me-2">
+                        <i class="bi bi-circle-half"></i>
+                    </button>
+                    <ul class="navbar-nav">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                {% if true_user %}
+                                    <img src="{% if true_user.profile_picture %}{{true_user.profile_picture.url}}{% else %}{% static 'img/default_profile_pic.webp' %}{% endif %}" 
+                                    alt="{{true_user.username}} - Profile Picture" class="rounded-circle" width="30" height="30">
+                                    {{true_user.username}}
+                                {% else %}
+                                    <img src="{% if user.profile_picture %}{{user.profile_picture.url}}{% else %}{% static 'img/default_profile_pic.webp' %}{% endif %}" 
+                                    alt="{{user.username}} - Profile Picture" class="rounded-circle" width="30" height="30">
+                                    {{user.username}}
+                                {% endif %}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                {% if true_user %}
+                                    <li><a class="dropdown-item" href="{% url 'profile' true_user.username %}">My Profile</a></li>
+                                {% else %}
+                                    <li><a class="dropdown-item" href="{% url 'profile' user.username %}">My Profile</a></li>
+                                {% endif %}
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>  
+        </nav>
+        
+        <div class="nav-scroller py-1 mb-3 border-bottom" data-aos="fade-right" data-aos-delay="450">
+            <nav class="nav nav-underline d-flex justify-content-center" id="nav-scroller">
+                {% for tag in tags %}
+                    {% if forloop.counter < 15%}
+                        <a href="{% url "list" tag.name %}" class="nav-item nav-link link-body-emphasis">{{ tag.name }}</a>
+                    {% endif %}
+                   
+                {% endfor %}
+            </nav>
+        </div>
+    </header>
+    
+    <main class="container">
+    {% block content %}
+    {% endblock %}
+    </main>
+    
+    <footer class="py-5 text-center text-body-secondary bg-body-tertiary">
+        <p class="text-primary-emphasis">ReviSphere built by <a href="https://www.github.com/harkais88">Arka Biswas</a></p>
+        <p class="text-info">Tools Used</p>
+        <ul class="list-group list-group-horizontal justify-content-center">
+            <li class="list-group-item"><a href="https://www.djangoproject.com/" target="_blank">Django</a></li>
+            <li class="list-group-item"><a href="https://getbootstrap.com/" target="_blank">Bootstrap</a></li>
+            <li class="list-group-item"><a href="https://www.tiny.cloud/" targe="_blank">TinyMCE</a></li>
+            <li class="list-group-item"><a href="https://github.com/mailhog/MailHog" target="_blank">MailHog</a></li>
+            <li class="list-group-item"><a href="https://michalsnik.github.io/aos/" target="_blank">AOS</a></li>
+            <li class="list-group-item"><a href="https://htmx.org/" target="_blank">HTMX</a></li>
+            <li class="list-group-item"><a href="https://alpinejs.dev/" target="_blank">Alphine.js</a></li>
+            <li class="list-group-item"><a href="https://github.com/joke2k/faker" target="_blank">Faker</a></li>
+            <li class="list-group-item"><a href="https://www.dicebear.com/" target="_blank">Dicebear</a></li>
+            <li class="list-group-item"><a href="https://picsum.photos/" target="_blank">Lorem Picsum</a></li>
+        </ul>
+    </footer>
+
+    <script src="{% static "vendor/bootstrap/js/bootstrap.min.js" %}"></script>
+    <script src="{% static "vendor/bootstrap/js/bootstrap.bundle.min.js" %}"></script>
+    <script src="{% static "vendor/aos/aos.js" %}"></script>
+    <script>AOS.init({
+        // Global settings:
+        disable: false, // accepts following values: 'phone', 'tablet', 'mobile', boolean, expression or function
+        startEvent: 'DOMContentLoaded', // name of the event dispatched on the document, that AOS should initialize on
+        initClassName: 'aos-init', // class applied after initialization
+        animatedClassName: 'aos-animate', // class applied on animation
+        useClassNames: false, // if true, will add content of `data-aos` as classes on scroll
+        disableMutationObserver: false, // disables automatic mutations' detections (advanced)
+        debounceDelay: 50, // the delay on debounce used while resizing window (advanced)
+        throttleDelay: 99, // the delay on throttle used while scrolling the page (advanced)
+        
+      
+        // Settings that can be overridden on per-element basis, by `data-aos-*` attributes:
+        offset: 120, // offset (in px) from the original trigger point
+        delay: 0, // values from 0 to 3000, with step 50ms
+        duration: 400, // values from 0 to 3000, with step 50ms
+        easing: 'ease', // default easing for AOS animations
+        once: false, // whether animation should happen only once - while scrolling down
+        mirror: false, // whether elements should animate out while scrolling past them
+        anchorPlacement: 'top-bottom', // defines which position of the element regarding to window should trigger the animation
+      })
+    </script>
+</body>
+</html>

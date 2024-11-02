@@ -1,0 +1,139 @@
+{% extends "authentication/skeleton.html" %}
+{% load static %}
+
+{% block title %}Register{% endblock %}
+
+{% block head_scripts %}
+    <script src="https://unpkg.com/htmx.org@2.0.3"></script>
+    <style>
+        main {
+            background-image: url('{% static "img/register.svg" %}'); /* Adjust the path to your image */
+            background-size: contain; /* Cover the entire area */
+            background-position: center; /* Center the image */
+            background-repeat: no-repeat; /* Do not repeat the image */
+            background-attachment: fixed; /* Fixed background for a nice effect */
+        }
+
+        .card-dark {
+            background-color: rgba(34, 34, 34, 0.8); /* Dark gray */
+            border-radius: 1rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* Darker shadow */
+            color: white; /* White text for contrast */
+        }
+
+        .card-light {
+            background-color: rgba(255, 255, 255, 0.8); /* White with 80% opacity */
+            border-radius: 1rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow */
+        }
+
+        .input-group {
+            position: relative;
+        }
+        
+        .input-group .bi {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+        }
+    </style>
+{% endblock  %}
+
+{% block content %}
+<div class="container my-5 p-3">
+    <div class="row d-flex justify-content-center">
+        <div class="col-lg-6 col-md-8 mb-4">
+            <div class="card shadow-lg rounded" :class="theme === 'dark' ? 'card-dark' : 'card-light'">
+                <h1 class="card-title text-center mt-4 display-4">ReviSphere</h1>
+                <h6 class="card-subtitle text-center text-muted mb-3">Your personal blogger</h6>
+                <h3 class="card-title text-center mb-4">Register</h3>
+
+                <div class="card-body">
+                    {% if error %}
+                        <div class="alert alert-danger" role="alert">{{ error }}</div>
+                    {% endif %}
+    
+                    <form action="{% url 'register' %}" method="post" class="rounded" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        {% for fm in form %}
+                            <div class="mb-3">
+                                <label for="{{ fm.id_for_label }}" class="form-label">{{ fm.label }}</label>
+                                {% if fm.label == 'Password' %}
+                                    <div class="input-group">
+                                        {{ fm }}
+                                        <i class="bi bi-eye-slash" id="togglePassword" style="cursor: pointer;"></i>
+                                    </div>
+                                {% else %}
+                                    {{ fm }}
+                                {% endif %}
+                                {% if fm.errors %}
+                                    <div class="text-danger mt-1">
+                                        {% for error in fm.errors %}
+                                            <small class="form-text text-danger">{{ error|striptags }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                {% if fm.help_text %}
+                                    <small class="form-text text-muted">{{ fm.help_text }}</small>
+                                {% endif %}
+                                {% if fm.label == 'Username' %}
+                                    <div id="username-check"></div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+
+                        <div id="profilePicturePreview" class="mb-3 text-center" style="display: none;">
+                            <img id="profilePicture" src="#" alt="Profile Picture Preview" class="img-fluid rounded-circle" style="max-width: 150px; border: 2px solid #fff;">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">Register Here!</button>
+                    </form>
+    
+                    <div class="mt-3 text-center">
+                        <a href="{% url 'login' %}" class="text-decoration-none text-info">Already have an account? Login Here</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function previewProfilePicture(input) {
+        const preview = document.getElementById('profilePicture');
+        const previewDiv = document.getElementById('profilePicturePreview');
+        
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                previewDiv.style.display = 'block'; // Show the preview
+            }
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            previewDiv.style.display = 'none'; // Hide the preview if no file is selected
+        }
+    }
+
+    function setupPasswordToggle(passwordInput, toggleIcon) {
+        toggleIcon.addEventListener('click', () => {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            toggleIcon.classList.toggle('bi-eye'); // Toggle the icon
+            toggleIcon.classList.toggle('bi-eye-slash');
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.querySelector('input[type="password"]'); // Adjust if necessary
+        if (togglePassword && passwordInput) {
+            setupPasswordToggle(passwordInput, togglePassword);
+        }
+    });
+</script>
+{% endblock %}
+

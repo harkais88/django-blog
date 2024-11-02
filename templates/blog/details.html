@@ -1,0 +1,169 @@
+{% extends "blog/skeleton.html" %}
+{% load custom_filters %}
+
+{% block title %}{{ article.title }} - Details{% endblock %}
+
+{% block head_scripts %}
+<style>
+    .blog-post-meta {
+        margin: 20px 0;
+        color: #727272;
+    }
+
+    .blog-post-meta ul {
+        display: flex;
+        flex-wrap: wrap;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .blog-post-meta ul li {
+        margin-right: 20px;
+    }
+
+    .author-bio-light {
+        background-color: #becad7; /* Light background for emphasis */
+        padding: 15px;
+        border-radius: 5px;
+    }
+
+    .author-bio-dark {
+        background-color: #343a40; /* Dark background for dark mode */
+        padding: 15px;
+        border-radius: 5px;
+    }
+
+    .tag-title {
+        color: #535353; /* Dark color for light mode */
+        font-size: 20px;
+        font-weight: 600;
+        padding: 0 0 0 10px;
+        margin-bottom: 15px; /* Reduced margin */
+        border-left: 4px solid #465367; /* Visual accent */
+    }
+
+    .tags-custom ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .tags-custom li {
+        display: inline-block;
+    }
+
+    .tags-custom ul a {
+        background-color: color-mix(in srgb, #212529, transparent 94%);
+        color: color-mix(in srgb, #212529, transparent 30%);
+        border-radius: 50px;
+        font-size: 14px;
+        padding: 5px 15px;
+        margin: 0 6px 8px 0;
+        display: inline-block;
+        transition: 0.3s;
+        text-decoration: none;
+      }
+
+    .tags-custom ul a.dark-mode {
+        background-color: #465367; /* Darker background for dark mode */
+        color: #ffffff; /* Light text color for dark mode */
+    }
+
+    .tags-custom ul a:hover {
+        background: #0056b3; /* Darker shade on hover */
+        color: #ffffff;
+    }
+
+    .tags-custom ul a.dark-mode:hover {
+        background: #0056b3; /* Maintain hover effect */
+    }
+    
+
+    .widget-item {
+        margin-bottom: 30px;
+        background-color: #f8f9fa;
+        border: 1px solid color-mix(in srgb, #e3e3e3, transparent 90%);
+        padding: 20px; /* Reduced padding */
+        border-radius: 5px;
+
+    }
+    
+    .widget-item.dark-mode {
+        background-color: #343a40; /* Dark background for dark mode */
+        border-color: #465367; /* Border for dark mode */
+    }
+
+      .widget-item:last-child {
+        margin-bottom: 0;
+      }
+
+      .widget-item.dark-mode .tag-title {
+        color: #f8f9fa; /* Light color for dark mode */
+    }
+    
+      
+</style>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-8" data-aos="fade-up">
+            <article class="mb-4">
+                <img src="{{ image.image.url }}" alt="{{ article.title }}" class="img-fluid mb-3">
+                <h1 class="mb-4">{{ article.title }}</h1>
+                <div class="blog-post-meta"> 
+                    <ul class="list-unstyled d-flex align-items-center">
+                        <li>Posted by {{ article.author }}</li>
+                        <li>Created on: {{ article.created_at }}</li>
+                    </ul>
+                </div>
+                <p>{{ article.content|add_class_to_images:"img-fluid"|safe }}</p>
+                <a href="{% url 'index' %}" class="btn btn-primary">Return to index</a>
+            </article>
+        </div>
+        <div class="col-md-4" data-aos="fade-left" data-aos-delay="200">
+            <div class="position-sticky" style="top: 20px;">
+                
+                <div class="mb-3" :class="theme === 'dark'?'author-bio-dark': 'author-bio-light'">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <h4 class="fst-italic">About {{article.author.username}}</h4>
+                            <p class="mb-0">{{ article.author.about }}</p>
+                        </div>
+                        <div class="col-sm-6">
+                            <img src="{{article.author.profile_picture.url}}" alt="{{article.author.username}}" class="img-fluid rounded-circle">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tags-custom widget-item" :class="theme === 'dark'?'dark-mode':''">
+                    <h3 class="tag-title">Tags</h3>
+                        <ul>
+                            {% for tag in article.tags.all %}
+                                <li><a href="{% url 'list' tag.name %}" :class="theme === 'dark'?'dark-mode':''">{{ tag.name }}</a></li>
+                            {% endfor %}
+                        </ul>
+                </div>
+                
+                <div>
+                    <h4 class="fst-italic">Related Articles</h4>
+                    <ul class="list-unstyled">
+                        {% for article in related_articles %}
+                        <li>
+                            <a class="d-flex flex-column flex-lg-row gap-3 align-items-start align-items-lg-center py-3 link-body-emphasis text-decoration-none border-top" href="{% url 'details' article.id %}">
+                                <img src="{{ article.get_image.image.url }}" class="bd-placeholder-img" width="100%" height="96" alt="">
+                                <div class="col-lg-8">
+                                    <h6 class="mb-0">{{ article.title }}</h6>
+                                    <small class="text-body-secondary">{{ post.created_at }}</small>
+                                </div>
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+                  

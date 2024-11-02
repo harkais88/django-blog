@@ -1,0 +1,77 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReviSphere - {% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'vendor/bootstrap/css/bootstrap.min.css'%}">
+    <link rel="stylesheet" href="{% static "vendor/aos/aos.css" %}">
+    <link rel="stylesheet" href="{% static "vendor/bootstrap-icons/font/bootstrap-icons.css" %}">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <style>
+        .main-container {
+            min-height: 100vh; /* Full height for centering */
+            display: flex;
+            align-items: center; /* Vertically center */
+            justify-content: center; /* Horizontally center */
+        }
+        .card {
+            border-radius: 1rem; /* Rounded corners for the card */
+        }
+        .alert {
+            border-radius: 0.5rem; /* Rounded corners for alerts */
+        }
+    </style>
+    {% block head_scripts %}{% endblock %}
+</head>
+<body x-data="{theme: 'dark'}" :data-bs-theme="theme">
+    <header data-aos="fade-in">
+        <nav class="navbar navbar-expand-md fixed-top bg-body-tertiary">
+            <div class="container-fluid">
+                <div class="navbar-brand mb-0 ps-2 h1">
+                    <a href="{% url 'index' %}" :class="theme === 'dark'? 'text-decoration-none text-white': 'text-decoration-none text-dark'">
+                        ReviSphere
+                    </a>
+                </div>
+                <button class="btn ms-auto" @click="theme = (theme === 'dark' ? 'light' : 'dark')">
+                    <i class="bi bi-circle-half"></i>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container main-container" data-aos="fade-up">
+        {% block content %}
+        {% endblock  %}
+    </main>
+
+    <script src="{% static "vendor/bootstrap/js/bootstrap.min.js" %}"></script>
+    <script src="{% static "vendor/bootstrap/js/bootstrap.bundle.min.js" %}"></script>
+    <script src="{% static "vendor/aos/aos.js" %}"></script>
+    <script>AOS.init({
+        // Global settings:
+        disable: false, // accepts following values: 'phone', 'tablet', 'mobile', boolean, expression or function
+        startEvent: 'DOMContentLoaded', // name of the event dispatched on the document, that AOS should initialize on
+        initClassName: 'aos-init', // class applied after initialization
+        animatedClassName: 'aos-animate', // class applied on animation
+        useClassNames: false, // if true, will add content of `data-aos` as classes on scroll
+        disableMutationObserver: false, // disables automatic mutations' detections (advanced)
+        debounceDelay: 50, // the delay on debounce used while resizing window (advanced)
+        throttleDelay: 99, // the delay on throttle used while scrolling the page (advanced)
+        
+      
+        // Settings that can be overridden on per-element basis, by `data-aos-*` attributes:
+        offset: 120, // offset (in px) from the original trigger point
+        delay: 0, // values from 0 to 3000, with step 50ms
+        duration: 400, // values from 0 to 3000, with step 50ms
+        easing: 'ease', // default easing for AOS animations
+        once: false, // whether animation should happen only once - while scrolling down
+        mirror: false, // whether elements should animate out while scrolling past them
+        anchorPlacement: 'top-bottom', // defines which position of the element regarding to window should trigger the animation
+      })
+    </script>
+</body>
+</html>

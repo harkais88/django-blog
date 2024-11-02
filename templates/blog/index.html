@@ -1,0 +1,333 @@
+{% extends "blog/skeleton.html" %}
+
+{% block title %}Home Page{% endblock %}
+
+{% block head_scripts %}
+<style>
+        .icon-link {
+            transition: transform 0.3s ease; /* Smooth transition */
+            display: inline-block;
+            transform-origin: left;
+        }
+
+        .icon-link:hover {
+            transform: scale(1.1);
+        }
+
+        .bd-placeholder-img {
+            font-size: 1.125rem;
+            text-anchor: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            user-select: none;
+          }
+
+          .culture-category .post-entry {
+            margin-bottom: 30px;
+          }
+          
+          .culture-category .post-entry h3 a {
+            color: var(--heading-color);
+            font-weight: 600;
+          }
+          
+          .culture-category .post-entry h3 a:hover {
+            text-decoration: underline;
+          }
+          
+          .culture-category .post-entry .thumbnail {
+            flex: 0 0 65%;
+          }
+          
+          @media (max-width: 960px) {
+            .culture-category .post-entry .thumbnail {
+              flex: 0 0 100%;
+              margin-bottom: 20px;
+            }
+          }
+          
+          .culture-category .post-entry.half .thumbnail {
+            flex: 0 0 50%;
+          }
+          
+          @media (max-width: 768px) {
+            .culture-category .post-entry.half .thumbnail {
+              flex: 0 0 100%;
+              margin-bottom: 20px;
+            }
+          }
+          
+          .culture-category .post-entry.small-img .thumbnail {
+            flex: 0 0 30%;
+          }
+          
+          @media (max-width: 768px) {
+            .culture-category .post-entry.small-img .thumbnail {
+              flex: 0 0 100%;
+              margin-bottom: 20px;
+            }
+          }
+          
+          .culture-category .border-bottom {
+            border-color: color-mix(in srgb, var(--default-color), transparent 90%) !important;
+          }
+          
+          .culture-category .post-meta {
+            font-size: 11px;
+            letter-spacing: 0.07rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            color: color-mix(in srgb, var(--default-color), transparent 50%);
+            margin-bottom: 10px;
+          }
+          
+          .culture-category .author .photo {
+            margin-right: 10px;
+          }
+          
+          .culture-category .author .photo img {
+            width: 40px;
+            border-radius: 50%;
+            margin-bottom: 0;
+          }
+          
+          .culture-category .author .name h3 {
+            margin: 0;
+            padding: 0;
+            font-size: 15px;
+            font-family: var(--default-font);
+          }
+          
+          .culture-category .post-list {
+            margin-bottom: 30px;
+          }
+          
+          .culture-category .post-list img {
+            margin-bottom: 30px;
+          }
+          
+          .culture-category .post-list h2 {
+            margin-bottom: 20px;
+            font-size: 20px;
+            font-weight: 600;
+            line-height: 1.2;
+          }
+          
+          .culture-category .post-list h2 a {
+            color: var(--heading-color);
+          }
+          
+          .culture-category .post-list h2 a:hover {
+            text-decoration: underline;
+          }
+          
+          .culture-category .post-list.lg h2 {
+            font-size: 40px;
+            line-height: 1;
+          }
+
+          .culture-category a:not(:has(img)) {
+            text-decoration: none; /* Remove underline */
+            transition: transform 0.3s ease; /* Smooth transition */
+            display: inline-block;
+            transform-origin: left;
+        }
+        
+        .culture-category a:not(:has(img)):hover {
+            transform: scale(1.05); /* Slight zoom effect */
+            text-decoration: underline;
+        }
+
+        .tag-cloud {
+          display: flex;
+          flex-wrap: wrap; /* Allow tags to wrap to the next line */
+          justify-content: center; /* Center the tags */
+          gap: 10px; /* Space between tags */
+        }
+        
+        .tag-cloud button {
+          padding: 10px 15px; /* Adjust button size */
+          font-size: 1rem; /* Font size for tags */
+          transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+        }
+        
+        .tag-cloud button:hover {
+          background-color: #007bff; /* Change background on hover */
+          color: white; /* Text color on hover */
+          transform: scale(1.1);
+        }
+
+        @media (max-width: 600px) {
+          .tag-cloud {
+            flex-direction: column; /* Stack tags on smaller screens */
+            align-items: center; /* Center tags */
+          }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="p-4 p-md-5 mb-4 rounded text-body-emphasis bg-body-secondary" data-aos="fade-up">
+        <div class="row">
+            <div class="col-md-6 px-0" data-aos="fade-right" data-aos-delay="150">
+                <h1 class="display-4 fst-italic">HOME PAGE UNDER CONSTRUCTION</h1>
+                <p class="lead my-3">Other pages work though, so you can check them out, although designs are not final</p>
+                <p class="lead mb-0">
+                    <a href="#" class="text-body-emphasis fw-bold icon-link">Continue Reading.....</a>
+                </p>
+            </div>
+            <div class="col-md-6" data-aos="fade-left" data-aos-delay="300">
+                <img src="{{articles.first.get_image.image.url}}" alt="" class="img-fluid rounded img-stretch">
+            </div>
+        </div>
+    </div>
+
+    <div class="row" data-aos="fade-up" data-aos-delay="450">
+        <div class="col-md-6">
+            <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+                <div class="col p-4 d-flex flex-column position-static">
+                    <strong class="d-inline-block mb-2 text-primary-emphasis">World</strong>
+                    <h3 class="mb-0">Hello</h3>
+                    <div class="mb-1 text-body-secondary">Nov 12</div>
+                    <p class="card-text mb-auto">Lorem ipsum dolor sit amet consectetur adipisicing elit. Ratione, libero sit ipsam voluptatum tempora vero necessitatibus? Quis illo accusamus aliquam labore, enim dolores, error et cumque qui tenetur tempore sint!</p>
+                    <a class="icon-link gap-1 icon-link-hover stretched-link" href="#">Continue Reading</a>
+                </div>
+                <div class="col-auto d-none d-lg-block">
+                    <img src="{{articles.first.get_image.image.url}}" alt="" class="bd-placeholder-img" width="300" height="310">
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+                <div class="col p-4 d-flex flex-column position-static">
+                    <strong class="d-inline-block mb-2 text-primary-emphasis">World</strong>
+                    <h3 class="mb-0">Hello</h3>
+                    <div class="mb-1 text-body-secondary">Nov 12</div>
+                    <p class="card-text mb-auto">Lorem ipsum dolor sit amet consectetur adipisicing elit. Ratione, libero sit ipsam voluptatum tempora vero necessitatibus? Quis illo accusamus aliquam labore, enim dolores, error et cumque qui tenetur tempore sint!</p>
+                    <a class="icon-link gap-1 icon-link-hover stretched-link" href="#">Continue Reading</a>
+                </div>
+                <div class="col-auto d-none d-lg-block">
+                    <img src="{{articles.first.get_image.image.url}}" alt="" class="bd-placeholder-img" width="300" height="310">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="text-center text-info-emphasis">About ReviSphere</h2>
+    <p class="text-center text-secondary">Welcome to ReviSphere, your personal blogger, where we explore various topics, share insights, and create a community of like-minded individuals.</p>
+    
+    <br>
+    <section data-aos="fade-down" data-aos-easing="linear">
+      <h2 class="text-primary">Browse by your favorite tags!</h2>
+      <hr>
+      <div class="tag-cloud">
+        {% for tag in tags %}
+          <button class="btn btn-secondary rounded" data-aos="flip-down"><a href="{% url "list" tag.name %}">{{ tag.name }}</a></button>
+        {% endfor %}
+      </div>
+    </section>
+    <br>
+
+    <section id="culture-category" class="culture-category section">
+        <div class="container section-title" data-aos="fade-up" data-aos-delay="200">
+          <div class="section-title-container d-flex align-items-center justify-content-between">
+            <h2>Popular Posts</h2>
+            <p><a href="categories.html">See All Posts</a></p>
+          </div>
+        </div>
+        <hr data-aos="fade-up">
+        <div class="container" data-aos="fade-up" data-aos-delay="300">
+  
+          <div class="row">
+            <div class="col-md-9">
+  
+              <div class="d-lg-flex post-entry">
+                <a href="blog-details.html" class="me-4 thumbnail mb-4 mb-lg-0 d-inline-block">
+                  <img src="{{articles.first.get_image.image.url}}" alt="" class="img-fluid rounded shadow-md">
+                </a>
+                <div>
+                  <div class="post-meta"><span class="date">Culture</span> <span class="mx-1">•</span> <span>Jul 5th '22</span></div>
+                  <h3><a href="blog-details.html">What is the son of Football Coach John Gruden, Deuce Gruden doing Now?</a></h3>
+                  <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio placeat exercitationem magni voluptates dolore. Tenetur fugiat voluptates quas, nobis error deserunt aliquam temporibus sapiente, laudantium dolorum itaque libero eos deleniti?</p>
+                  <div class="d-flex align-items-center author">
+                    <div class="photo"><img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp" alt="" class="img-fluid rounded shadow-sm"></div>
+                    <div class="name">
+                      <h3 class="m-0 p-0">Wade Warren</h3>
+                    </div>
+                  </div>
+                </div>
+              </div>
+  
+              <div class="row">
+                <div class="col-lg-4">
+                  <div class="post-list border-bottom">
+                    <a href="blog-details.html"><img src="{{articles.first.get_image.image.url}}" alt="" class="img-fluid"></a>
+                    <div class="post-meta"><span class="date">Culture</span> <span class="mx-1">•</span> <span>Jul 5th '22</span></div>
+                    <h2 class="mb-2"><a href="blog-details.html">11 Work From Home Part-Time Jobs You Can Do Now</a></h2>
+                    <span class="author mb-3 d-block">Jenny Wilson</span>
+                    <p class="mb-4 d-block">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Vero temporibus repudiandae, inventore pariatur numquam cumque possimus</p>
+                  </div>
+  
+                  <div class="post-list">
+                    <div class="post-meta"><span class="date">Culture</span> <span class="mx-1">•</span> <span>Jul 5th '22</span></div>
+                    <h2 class="mb-2"><a href="blog-details.html">5 Great Startup Tips for Female Founders</a></h2>
+                    <span class="author mb-3 d-block">Jenny Wilson</span>
+                  </div>
+                </div>
+                <div class="col-lg-8">
+                  <div class="post-list">
+                    <a href="blog-details.html"><img src="{{articles.first.get_image.image.url}}" alt="" class="img-fluid"></a>
+                    <div class="post-meta"><span class="date">Culture</span> <span class="mx-1">•</span> <span>Jul 5th '22</span></div>
+                    <h2 class="mb-2"><a href="blog-details.html">How to Avoid Distraction and Stay Focused During Video Calls?</a></h2>
+                    <span class="author mb-3 d-block">Jenny Wilson</span>
+                    <p class="mb-4 d-block">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Vero temporibus repudiandae, inventore pariatur numquam cumque possimus</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+  
+            <div class="col-md-3">
+              <div class="post-list border-bottom">
+                <div class="post-meta"><span class="date">Culture</span> <span class="mx-1">•</span> <span>Jul 5th '22</span></div>
+                <h2 class="mb-2"><a href="blog-details.html">How to Avoid Distraction and Stay Focused During Video Calls?</a></h2>
+                <span class="author mb-3 d-block">Jenny Wilson</span>
+              </div>
+  
+              <div class="post-list border-bottom">
+                <div class="post-meta"><span class="date">Culture</span> <span class="mx-1">•</span> <span>Jul 5th '22</span></div>
+                <h2 class="mb-2"><a href="blog-details.html">17 Pictures of Medium Length Hair in Layers That Will Inspire Your New Haircut</a></h2>
+                <span class="author mb-3 d-block">Jenny Wilson</span>
+              </div>
+  
+              <div class="post-list border-bottom">
+                <div class="post-meta"><span class="date">Culture</span> <span class="mx-1">•</span> <span>Jul 5th '22</span></div>
+                <h2 class="mb-2"><a href="blog-details.html">9 Half-up/half-down Hairstyles for Long and Medium Hair</a></h2>
+                <span class="author mb-3 d-block">Jenny Wilson</span>
+              </div>
+  
+              <div class="post-list border-bottom">
+                <div class="post-meta"><span class="date">Culture</span> <span class="mx-1">•</span> <span>Jul 5th '22</span></div>
+                <h2 class="mb-2"><a href="blog-details.html">Life Insurance And Pregnancy: A Working Mom’s Guide</a></h2>
+                <span class="author mb-3 d-block">Jenny Wilson</span>
+              </div>
+  
+              <div class="post-list border-bottom">
+                <div class="post-meta"><span class="date">Culture</span> <span class="mx-1">•</span> <span>Jul 5th '22</span></div>
+                <h2 class="mb-2"><a href="blog-details.html">The Best Homemade Masks for Face (keep the Pimples Away)</a></h2>
+                <span class="author mb-3 d-block">Jenny Wilson</span>
+              </div>
+  
+              <div class="post-list border-bottom">
+                <div class="post-meta"><span class="date">Culture</span> <span class="mx-1">•</span> <span>Jul 5th '22</span></div>
+                <h2 class="mb-2"><a href="blog-details.html">10 Life-Changing Hacks Every Working Mom Should Know</a></h2>
+                <span class="author mb-3 d-block">Jenny Wilson</span>
+              </div>
+            </div>
+          </div>
+  
+        </div>
+  
+      </section>
+
+
+{% endblock %}

@@ -1,0 +1,170 @@
+{% extends "authentication/skeleton.html" %}
+{% load static %}
+
+{% block title %}OTP Verification{% endblock %}
+
+{% block head_scripts %}
+    <style>
+        .card-light {
+            width: 500px;  /* Increased width */
+            height: 350px; /* Increased height */
+            border: none;
+            background-color: rgba(224, 247, 250, 0.8); /* Light blue background color */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px; /* Added padding for better spacing */
+        }
+        
+        .card-light h6 {
+            color: #00796b; /* Darker blue color for the text */
+            font-size: 20px;
+        }
+
+        .card-dark {
+            width: 500px;  /* Increased width */
+            height: 350px; /* Increased height */
+            border: none;
+            background-color: rgba(38, 50, 56, 0.8); /* Dark background color */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px; /* Added padding for better spacing */
+        }
+        
+        .card-dark h6 {
+            color: #b2ebf2; /* Light blue color for the text */
+            font-size: 20px;
+        }
+
+        .inputs input {
+            width: 50px;  /* Increased input width */
+            height: 50px; /* Increased input height */
+        }
+        
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            margin: 0;
+        }
+        
+        .form-control:focus {
+            box-shadow: none;
+            border: 2px solid #00796b; /* Change the border color for light theme */
+        }
+        
+        .form-control-dark:focus {
+            box-shadow: none;
+            border: 2px solid #b2ebf2; /* Change the border color for dark theme */
+        }
+        
+        .validate {
+            border-radius: 20px;
+            height: 40px;
+            background-color: #00796b; /* Darker blue for the button */
+            border: 1px solid #00796b; /* Match the button border with the background */
+            color: white; /* White text color for better contrast */
+            width: 140px;
+        }
+
+        .validate-dark {
+            border-radius: 20px;
+            height: 40px;
+            background-color: #b2ebf2; /* Light blue for the button in dark theme */
+            border: 1px solid #b2ebf2; /* Match the button border with the background */
+            color: #263238; /* Dark text color for better contrast */
+            width: 140px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="row w-100">
+    <div class="col-lg-6 col-md-7">
+        <div :class="theme === 'dark'? 'card card-dark p-2 text-center': 'card card-light p2 text-center'">
+            <h6>Please enter the one time password <br> to verify your account</h6>
+            <div>
+                <span>A code has been sent to</span> <small>{{user.email|slice:":3"}}*****{{user.email|slice:"8:"}}</small>
+                {% if error %}
+                    <p class="text-danger justify-content-center">{{error}}</p>
+                {% endif %}
+                {% if resend %}
+                    <p class="text-success justify-content-center">{{resend}}</p>
+                {% endif %}
+                <div id="otp" class="inputs d-flex flex-row justify-content-center mt-2">
+                    <input class="m-2 text-center form-control rounded" type="text" id="first" maxlength="1" />
+                    <input class="m-2 text-center form-control rounded" type="text" id="second" maxlength="1" />
+                    <input class="m-2 text-center form-control rounded" type="text" id="third" maxlength="1" />
+                    <input class="m-2 text-center form-control rounded" type="text" id="fourth" maxlength="1" />
+                    <input class="m-2 text-center form-control rounded" type="text" id="fifth" maxlength="1" />
+                    <input class="m-2 text-center form-control rounded" type="text" id="sixth" maxlength="1" />
+                </div>
+                <div class="mt-4">
+                    <form method="post" action="{% url 'otp' user.username %}" onsubmit="combineOTP();">
+                        {% csrf_token %}
+                        <input type="hidden" name="otp" id="combined_otp">
+                        <button class="btn btn-danger px-4 validate" type="submit">Validate</button>
+                    </form>
+                </div>
+            </div>
+            <div class="content d-flex justify-content-center align-items-center mt-4">
+                <span class="text-muted pe-2">Didn't get the code?</span>
+                <form method="post" action="{% url 'otp' user.username %}">
+                    {% csrf_token %}
+                    <input type="submit" name="resend" value="Resend({{resend_count}}/5)" class="btn btn-info">
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6 col-md-5 mb-4 d-none d-md-block">
+        <img src="{% static 'img/otp.svg' %}" alt="OTP Verification" class="img-fluid">
+    </div>
+</div>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function(event) {
+            function OTPInput() {
+                const inputs = document.querySelectorAll('#otp > *[id]');
+                
+                for (let i = 0; i < inputs.length; i++) {
+                    inputs[i].addEventListener('keydown', function(event) {
+                        if (event.key === "Backspace") {
+                            inputs[i].value = '';
+                            if (i !== 0) inputs[i - 1].focus();
+                        } else {
+                            if (i === inputs.length - 1 && inputs[i].value !== '') {
+                                return true;
+                            } else if (event.keyCode > 47 && event.keyCode < 58) {
+                                inputs[i].value = event.key;
+                                if (i !== inputs.length - 1) inputs[i + 1].focus();
+                                event.preventDefault();
+                            } else if (event.keyCode > 64 && event.keyCode < 91) {
+                                inputs[i].value = String.fromCharCode(event.keyCode);
+                                if (i !== inputs.length - 1) inputs[i + 1].focus();
+                                event.preventDefault();
+                            }
+                        }
+                    });
+                }
+            } 
+            OTPInput();
+        });
+        
+        
+        function combineOTP() {
+            // Get the values from the OTP input fields and combine them
+            var otp = document.getElementById('first').value +
+                document.getElementById('second').value +
+                document.getElementById('third').value +
+                document.getElementById('fourth').value +
+                document.getElementById('fifth').value +
+                document.getElementById('sixth').value;
+
+            // Set the combined OTP value to the hidden field
+            document.getElementById('combined_otp').value = otp;
+        }
+    </script>
+{% endblock  %}

@@ -1,0 +1,79 @@
+{% extends "blog/skeleton.html" %}
+
+{% comment %} <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post new article</title>
+    {{form1.media}}
+</head>
+<body>
+    <h1>Create new article here</h1>
+    <form action="{% url "post" %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <h3>Enter article details</h3>
+        {% for fm in form1 %}
+            <label for="{{fm.id_for_label}}">{{fm.label}}</label>
+            {{fm}}
+        {% if fm.errors %}
+            {% for error in fm.errors %}
+                <p style="color: red;">{{error|striptags}}</p>
+            {% endfor %}
+        {% endif %}
+        {% endfor %}
+
+        <h3>Give Image</h3>
+        {% for fm in form2 %}
+            <label for="{{fm.id_for_label}}">{{fm.label}}</label>
+            {{fm}}
+            {% if fm.errors %}
+                {% for error in fm.errors %}
+                    <p style="color: red;">{{error|striptags}}</p>
+                {% endfor %}
+            {% endif %}            
+        {% endfor %}
+
+        <input type="submit" value="Submit">
+    </form>
+    <a href="{% url "index" %}">Cancel</a>
+</body>
+</html> {% endcomment %}
+
+{% block title %}Post new article{% endblock %}
+
+{% block head_scripts %}{{form1.media}}{% endblock %}
+
+{% block content %}
+<h1 data-aos="fade-up" data-aos-delay="400">Create new article here</h1>
+<form action="{% url "post" %}" method="post" enctype="multipart/form-data" data-aos="zoom-in" data-aos-delay="500">
+    {% csrf_token %}
+    
+    <h3>Enter article details</h3>
+    {% for fm in form1 %}
+        <label for="{{fm.id_for_label}}">{{fm.label}}</label>
+        {{fm}}
+    {% if fm.errors %}
+        {% for error in fm.errors %}
+            <p style="color: red;">{{error|striptags}}</p>
+        {% endfor %}
+    {% endif %}
+        <br><br>
+    {% endfor %}
+
+    <h3>Give Image</h3>
+    {% for fm in form2 %}
+        <label for="{{fm.id_for_label}}">{{fm.label}}</label>
+        {{fm}}
+        {% if fm.errors %}
+            {% for error in fm.errors %}
+                <p style="color: red;">{{error|striptags}}</p>
+            {% endfor %}
+        {% endif %}            
+    {% endfor %}
+    <br><br>
+    <input type="submit" value="Submit">
+</form>
+<a href="{% url "index" %}">Cancel</a>
+{% endblock %}
