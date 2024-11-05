@@ -47,7 +47,9 @@ def login(request):
 
         user = authenticate(request,username = username, password = password)
         if user is not None:
-            send_otp(user)
+            otp_success = send_otp(request,user)
+            if not otp_success:
+                return redirect('login')
             return redirect(reverse('otp', kwargs={'username': user.username}))
         context['error'] = 'You have entered the wrong username and/or password'
     return render(request,'authentication/login.html',context)
@@ -140,13 +142,15 @@ def password_change_request(request):
                     context['error'] = 'User with this email does not exist'
             except User.DoesNotExist:
                 context['error'] = 'User with this email does not exist'
+            except ConnectionRefusedError:
+                context['error'] = 'Something went wrong, please check your internet connection again, or contact an administrator'
 
     if request.headers.get('HX-Request'):
         # Build the HTML response directly
         response_html = '<div>'
         if 'success' in context:
             response_html += f'<p class="text-success">{context["success"]}</p>'
-            response_html += f'<a href="{reverse('login')}" class="btn btn-custom">Return to Login Page</a>'
+            response_html += f'<a href="{reverse("login")}" class="btn btn-custom">Return to Login Page</a>'
         elif 'error' in context:
             response_html += f'<p class="text-danger">{context["error"]}</p><p>Please enter your registered email address to request a password reset.</p>'
         else:

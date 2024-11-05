@@ -241,7 +241,7 @@ def search(request):
         if request.headers.get('HX-Request'):
             return render(request, 'blog/article_list.html', {'page_obj': page_obj})
         
-        messages.success(request, f"Search results for: {" and ".join(search_query)}")
+        messages.success(request, f"Search results for: {' and '.join(search_query)}")
         context = {
             'page_obj': page_obj,
             'tags': Tags.objects.all(),

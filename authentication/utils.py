@@ -8,20 +8,29 @@ import json
 import hashlib
 from django.conf import settings
 import base64
+from django.contrib import messages
+from django.http import HttpRequest
 
-def send_otp(user: User, timeout = 300):
-    """Generate a otp, set it to cache and send it to user email"""
+def send_otp(request: HttpRequest, user: User, timeout = 300):
+    """Generate a otp, set it to cache and send it to user email. Returns False if email sending failed"""
 
     otp = randint(111111,999999)
     cache.set(key = user.username, value = otp, timeout = timeout)
 
-    send_mail(
-        subject=f'{user.username} - OTP Verification',
-        message=f'Your otp is {otp}',
-        from_email='no-reply@example.com',
-        recipient_list=[user.email],
-        fail_silently=False 
-    )
+    try:
+        send_mail(
+            subject=f'{user.username} - OTP Verification',
+            message=f'Your otp is {otp}',
+            from_email='no-reply@example.com',
+            recipient_list=[user.email],
+            fail_silently=False 
+        )
+
+        return True
+    except ConnectionRefusedError:
+        messages.error(request, 'It looks like we could not send your otp to your email. Please check your internet connection or contact an adminstrator.')
+        cache.clear()
+        return False
 
 def get_token():
     """Generate a 32-byte urlsafe token, and return both the token and it's hashed form"""

@@ -87,7 +87,7 @@ class Command(BaseCommand):
             # Setting tags for Article Instance
             article.tags.set(random.sample(list(Tags.objects.all()), k=random.randint(1,Tags.objects.count())))
             self.stdout.write(
-                self.style.SUCCESS(f"Added following tags for article {title} by {author.username}: {", ".join(list(article.tags.values_list("name",flat=True)))}")) 
+                self.style.SUCCESS(f'Added following tags for article {title} by {author.username}: {", ".join(list(article.tags.values_list("name",flat=True)))}')) 
 
             # Setting Banner Image for Article Instance
             banner_img_url = f"https://picsum.photos/971/500.jpg?random={random.randint(1,1000)}"

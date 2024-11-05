@@ -127,11 +127,11 @@
                 
                 <div class="mb-3" :class="theme === 'dark'?'author-bio-dark': 'author-bio-light'">
                     <div class="row">
-                        <div class="col-sm-6">
+                        <div class="col-sm-8">
                             <h4 class="fst-italic">About {{article.author.username}}</h4>
                             <p class="mb-0">{{ article.author.about }}</p>
                         </div>
-                        <div class="col-sm-6">
+                        <div class="col-sm-4">
                             <img src="{{article.author.profile_picture.url}}" alt="{{article.author.username}}" class="img-fluid rounded-circle">
                         </div>
                     </div>
