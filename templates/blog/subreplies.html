@@ -1,0 +1,26 @@
+<ul>
+    {% for sub_reply in replies %}
+        <li x-data="{hidden: false}">
+            {{sub_reply}}
+            <button @click="hidden = !hidden">
+                <i class="bi bi-reply"></i>
+            </button>
+            {% if reply.user == true_user %}
+            <button>
+                <i class="bi bi-trash"></i>
+            </button>
+            {% endif %}
+            <div x-show="hidden">
+                <form action="{% url "comment" article_id=article.id%}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="parent_id" value="{{sub_reply.id}}">
+                    {{comments_form.as_p}}
+                    <button type="submit" class="btn btn-primary form-control">Post</button>
+                </form>
+            </div>
+            {% if sub_reply.children.all %}
+                {% include "blog/subreplies.html" with replies=sub_reply.children.all %}
+            {% endif %}
+        </li>
+    {% endfor %}
+</ul>

@@ -8,6 +8,7 @@ urlpatterns = [
     path('list/<str:tag_name>',views.list,name="list"),
     path('search/',views.search,name="search"),
     path('details/<int:article_id>',views.details,name="details"),
+    path('comments/<int:article_id>',views.comment,name="comment"), # For root comment
     path('profile/<str:username>',views.profile,name="profile"),
     path('profile/delete/<int:article_id>',views.delete,name="delete"),
     path('profile/update/<int:article_id>', views.update, name="update"),

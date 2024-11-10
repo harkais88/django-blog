@@ -1,21 +1,21 @@
 import base64
 import os
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import ArticleForm,ArticleMediaForm
-from .models import Article,ArticleMedia,Tags
+from .forms import ArticleForm,ArticleMediaForm, CommentsForm
+from .models import Article,ArticleMedia,Tags,Comments
 from authentication.models import User
 from .utils import parse_content
 from django.core.files.base import ContentFile
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.contrib import messages
-from django.http import Http404
+from django.http import Http404, HttpResponse
 
-# NOTE: Could have used the login required decorator
-
+@login_required(login_url="login")
 def index(request):
-    if not request.user.is_authenticated:
-        return redirect('login')
+    # if not request.user.is_authenticated:
+    #     return redirect('login')
 
     context = {
         'articles': Article.objects.all(),
@@ -25,6 +25,7 @@ def index(request):
 
     return render(request,'blog/index.html',context)
 
+@login_required(login_url="login")
 def post(request):
     context = {
         'form1': ArticleForm(),
@@ -80,6 +81,7 @@ def post(request):
 
     return render(request,'blog/post.html',context)
 
+@login_required(login_url="login")
 def update(request,article_id):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -153,13 +155,21 @@ def update(request,article_id):
 
     return render(request, 'blog/update.html', context)
 
+@login_required(login_url="login")
 def details(request,article_id):
     article = Article.objects.get(id = article_id)
+    comments_form = CommentsForm()
+
+    comments = Comments.objects.filter(article__id = article_id, parent = None)
+
     context = {
         'article': article,
         'image': ArticleMedia.objects.get(article__id = article_id,type="BANNER"),
         'tags': Tags.objects.all()[:15],
-        'related_articles': Article.objects.filter(tags = article.tags.order_by("?").first()).exclude(id = article_id)[:5],        
+        'related_articles': Article.objects.filter(tags = article.tags.order_by("?").first()).exclude(id = article_id)[:5],
+        'comments_form': comments_form,
+        'comments': comments,
+        'true_user': request.user,        
     }
     return render(request, 'blog/details.html', context)
 
@@ -250,3 +260,23 @@ def search(request):
         return render(request, 'blog/list.html', context)
 
     return Http404("Something went wrong here! You are not supposed to be here")
+
+def comment(request, article_id):
+    if request.method == 'POST':
+        comments_form = CommentsForm(request.POST)
+        if comments_form.is_valid():
+            comment = comments_form.save(commit=False)
+            comment.article = Article.objects.get(id = article_id)
+            comment.user = request.user
+
+            comment_id = request.POST.get('parent_id', 0)
+
+            if comment_id != 0:
+                parent_comment = get_object_or_404(Comments, id=comment_id)
+                comment.parent = parent_comment
+            else:
+                comment.parent = None
+            comment.save()
+            messages.success(request, f"Comment added successfully!")
+            return redirect(details,article_id)
+    return HttpResponse("Something went wrong!")

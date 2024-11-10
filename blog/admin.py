@@ -1,7 +1,7 @@
 from django.urls import reverse
 from django.utils.html import format_html
 from django.contrib import admin
-from .models import Article, ArticleMedia, Tags
+from .models import Article, ArticleMedia, Tags, Comments
 
 class ArticleAdmin(admin.ModelAdmin):
     list_display = ('title', 'author', 'created_at')
@@ -23,6 +23,11 @@ class ArticleMediaAdmin(admin.ModelAdmin):
 
     edit_link.short_description = 'Edit'
 
+# Should edit this
+class CommentsAdmin(admin.ModelAdmin):
+    list_display = ('article', 'user', 'parent')
+
 admin.site.register(Article, ArticleAdmin)
 admin.site.register(ArticleMedia, ArticleMediaAdmin)
 admin.site.register(Tags)
+admin.site.register(Comments,CommentsAdmin)
