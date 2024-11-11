@@ -280,3 +280,10 @@ def comment(request, article_id):
             messages.success(request, f"Comment added successfully!")
             return redirect(details,article_id)
     return HttpResponse("Something went wrong!")
+
+def load_replies(request, article_id, comment_id):
+    if request.method == "GET":
+        article = Article.objects.get(id = article_id)
+        comment = Comments.objects.get(id=comment_id)
+
+        return render(request, "blog/subreplies.html", {"article": article,"replies": comment.children.all()})

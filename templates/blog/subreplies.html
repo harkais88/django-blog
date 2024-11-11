@@ -1,15 +1,15 @@
 <ul>
     {% for sub_reply in replies %}
-        <li x-data="{hidden: false}">
+        <li x-data="{post_hidden: false, replies_hidden: true}">
             {{sub_reply}}
             <button @click="hidden = !hidden">
                 <i class="bi bi-reply"></i>
             </button>
-            {% if reply.user == true_user %}
+            {% comment %} {% if sub_reply.user == true_user %}
             <button>
                 <i class="bi bi-trash"></i>
             </button>
-            {% endif %}
+            {% endif %} {% endcomment %}
             <div x-show="hidden">
                 <form action="{% url "comment" article_id=article.id%}" method="post">
                     {% csrf_token %}
@@ -18,8 +18,23 @@
                     <button type="submit" class="btn btn-primary form-control">Post</button>
                 </form>
             </div>
+            {% comment %} {% if sub_reply.children.all %}
+                <button x-show="replies_hidden" @click="replies_hidden = false">
+                    Show more replies
+                </button>
+
+                <div x-show="!replies_hidden">
+                    {% include "blog/subreplies.html" with replies=sub_reply.children.all %}
+                </div>
+            {% endif %} {% endcomment %}
+
             {% if sub_reply.children.all %}
-                {% include "blog/subreplies.html" with replies=sub_reply.children.all %}
+                <button hx-get="{% url "load_replies" article_id=article.id comment_id=sub_reply.id %}" hx-swap="innerHTML" hx-target="#replies-{{sub_reply.id}}"
+                        x-show="replies_hidden" @click="replies_hidden = false">
+                    Show more replies
+                </button>
+
+                <div id="replies-{{sub_reply.id}}" x-show="!replies_hidden" x-transition></div>
             {% endif %}
         </li>
     {% endfor %}

@@ -4,6 +4,7 @@
 {% block title %}{{ article.title }} - Details{% endblock %}
 
 {% block head_scripts %}
+<script src="https://unpkg.com/htmx.org@2.0.3"></script>
 <style>
     .blog-post-meta {
         margin: 20px 0;
@@ -134,10 +135,10 @@
                     {% if comments %}
                         <ul>
                             {% for comment in comments %}
-                                <li x-data="{hidden: false}">
+                                <li x-data="{post_hidden: false, replies_hidden: true}">
                                     {{comment}}
 
-                                    <button @click="hidden = !hidden">
+                                    <button @click="post_hidden = !post_hidden">
                                         <i class="bi bi-reply"></i>
                                     </button>
 
@@ -148,7 +149,7 @@
                                     </button>
                                     {% endif %} {% endcomment %}
 
-                                    <div x-show="hidden">
+                                    <div x-show="post_hidden">
                                         <form action="{% url "comment" article_id=article.id%}" method="post">
                                             {% csrf_token %}
                                             <input type="hidden" name="parent_id" value="{{comment.id}}">
@@ -157,34 +158,25 @@
                                         </form>
                                     </div>
 
-                                    {% if comment.children %} <!--Showing First Descendants-->
-                                        <ul>
-                                            {% for reply in comment.children.all %}
-                                                <li x-data="{hidden: false}">
-                                                    {{reply}}
-                                                    <button @click="hidden = !hidden">
-                                                        <i class="bi bi-reply"></i>
-                                                    </button>
-                                                    {% if reply.user == true_user %}
-                                                    <button>
-                                                        <i class="bi bi-trash"></i>
-                                                    </button>
-                                                    {% endif %}
-                                                    <div x-show="hidden">
-                                                        <form action="{% url "comment" article_id=article.id%}" method="post">
-                                                            {% csrf_token %}
-                                                            <input type="hidden" name="parent_id" value="{{reply.id}}">
-                                                            {{comments_form.as_p}}
-                                                            <button type="submit" class="btn btn-primary form-control">Post</button>
-                                                        </form>
-                                                    </div>
-                                                    {% if reply.children.all %}
-                                                        {% include "blog/subreplies.html" with replies=reply.children.all %}
-                                                    {% endif %} 
-                                                </li>
-                                            {% endfor %}
-                                        </ul>
+                                    {% comment %} {% if comment.children %}
+                                        <button x-show="replies_hidden" @click="replies_hidden = false">
+                                            Show more replies
+                                        </button>
+
+                                        <div x-show="!replies_hidden" x-transition>
+                                            {% include "blog/subreplies.html" with replies=comment.children.all %}
+                                        </div>
+                                    {% endif %} {% endcomment %}
+
+                                    {% if comment.children.all %}
+                                        <button hx-get="{% url "load_replies" article_id=article.id comment_id=comment.id %}" hx-swap="innerHTML" hx-target="#replies-{{comment.id}}"
+                                                x-show="replies_hidden" @click="replies_hidden = false">
+                                            Show more replies
+                                        </button>
+
+                                        <div id="replies-{{comment.id}}" x-show="!replies_hidden" x-transition></div>
                                     {% endif %}
+
                                 </li>
                             {% endfor %}
                         </ul>
