@@ -88,7 +88,9 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS(f"Successfully created user {username}"))
             file.write(f"\n Username: {username}\n Email: {email}\n Password: {password}\n")
 
-            avatar_url = f"https://api.dicebear.com/9.x/lorelei/jpg?seed={username}"
+            avatar_choices = ['lorelei','adventurer','micah','croodles','notionists']
+            avatar_choice = choice(avatar_choices)
+            avatar_url = f"https://api.dicebear.com/9.x/{avatar_choice}/jpg?seed={username}"
             response = requests.get(avatar_url)
             if response.status_code == 200:
                 profile_picture = ContentFile(response.content, name=f"{username}_profile_pic.png")

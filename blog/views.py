@@ -161,6 +161,11 @@ def details(request,article_id):
     comments_form = CommentsForm()
 
     comments = Comments.objects.filter(article__id = article_id, parent = None)
+    paginator = Paginator(comments, per_page=5)
+    page_obj = paginator.get_page(request.GET.get('page'))
+
+    if request.headers.get('Hx-Request'):
+        return render(request, "blog/extra_comments.html", {"article": article, "comments": page_obj, "comments_form": comments_form})
 
     context = {
         'article': article,
@@ -168,7 +173,7 @@ def details(request,article_id):
         'tags': Tags.objects.all()[:15],
         'related_articles': Article.objects.filter(tags = article.tags.order_by("?").first()).exclude(id = article_id)[:5],
         'comments_form': comments_form,
-        'comments': comments,
+        'comments': page_obj,
         'true_user': request.user,        
     }
     return render(request, 'blog/details.html', context)
@@ -285,5 +290,6 @@ def load_replies(request, article_id, comment_id):
     if request.method == "GET":
         article = Article.objects.get(id = article_id)
         comment = Comments.objects.get(id=comment_id)
+        comments_form = CommentsForm()
 
-        return render(request, "blog/subreplies.html", {"article": article,"replies": comment.children.all()})
+        return render(request, "blog/subreplies.html", {"article": article,"replies": comment.children.all(),"comments_form": comments_form})

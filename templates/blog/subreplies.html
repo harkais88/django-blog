@@ -2,7 +2,7 @@
     {% for sub_reply in replies %}
         <li x-data="{post_hidden: false, replies_hidden: true}">
             {{sub_reply}}
-            <button @click="hidden = !hidden">
+            <button @click="post_hidden = !post_hidden">
                 <i class="bi bi-reply"></i>
             </button>
             {% comment %} {% if sub_reply.user == true_user %}
@@ -10,7 +10,7 @@
                 <i class="bi bi-trash"></i>
             </button>
             {% endif %} {% endcomment %}
-            <div x-show="hidden">
+            <div x-show="post_hidden">
                 <form action="{% url "comment" article_id=article.id%}" method="post">
                     {% csrf_token %}
                     <input type="hidden" name="parent_id" value="{{sub_reply.id}}">
