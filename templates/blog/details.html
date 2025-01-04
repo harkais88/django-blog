@@ -4,6 +4,7 @@
 {% block title %}{{ article.title }} - Details{% endblock %}
 
 {% block head_scripts %}
+<script src="https://unpkg.com/htmx.org@2.0.3"></script>
 <style>
     .blog-post-meta {
         margin: 20px 0;
@@ -119,6 +120,80 @@
                     </ul>
                 </div>
                 <p>{{ article.content|add_class_to_images:"img-fluid"|safe }}</p>
+                
+                <!-- Post Comments Section -->
+                <h4>Add a comment</h4>
+                <form action="{% url "comment" article_id=article.id%}" method="post" class="form-group">
+                    {% csrf_token %}
+                    {{comments_form.as_p}}
+                    <button type="submit" class="btn btn-primary form-control">Post</button>
+                </form>
+
+                <!-- Comments Section -->
+                <div class="mt-3">
+                    <h5>All comments</h5>
+                    {% if comments %}
+                        <ul id="comments">
+                            {% for comment in comments %}
+                                <li x-data="{post_hidden: false, replies_show: true}">
+                                    {{comment}}
+
+                                    <button @click="post_hidden = !post_hidden">
+                                        <i class="bi bi-reply"></i>
+                                    </button>
+
+                                    <!-- Delete Comment Feature -->
+                                    {% comment %} {% if comment.user == true_user %}
+                                    <button>
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                    {% endif %} {% endcomment %}
+
+                                    <div x-show="post_hidden">
+                                        <form action="{% url "comment" article_id=article.id%}" method="post">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="parent_id" value="{{comment.id}}">
+                                            {{comments_form.as_p}}
+                                            <button type="submit" class="btn btn-primary form-control">Post</button>
+                                        </form>
+                                    </div>
+
+                                    {% comment %} {% if comment.children %}
+                                        <button x-show="replies_hidden" @click="replies_hidden = false">
+                                            Show more replies
+                                        </button>
+
+                                        <div x-show="!replies_hidden" x-transition>
+                                            {% include "blog/subreplies.html" with replies=comment.children.all %}
+                                        </div>
+                                    {% endif %} {% endcomment %}
+
+                                    {% if comment.children.all %}
+                                        <button hx-get="{% url "load_replies" article_id=article.id comment_id=comment.id %}" 
+                                                hx-swap="innerHTML" hx-target="#replies-{{comment.id}}"
+                                                x-show="replies_show" @click="replies_show = false">
+                                            Show replies
+                                        </button>
+
+                                        <div id="replies-{{comment.id}}" x-show="!replies_show" x-transition></div>
+                                    {% endif %}
+
+                                </li>
+                            {% endfor %}
+                        </ul>
+
+                        {% if comments.has_next %}
+                            <button x-data="{loader_show: true}" x-show="loader_show" @click="loader_show = false" 
+                                    hx-get="{% url "details" article_id=article.id %}?page={{comments.next_page_number}}" 
+                                    hx-target="#comments" hx-swap="beforeend">
+                                Load more comments
+                            </button>
+                        {% endif %}
+                    {% else %}
+                    <p>No comments available yet</p>
+                    {% endif %}
+                </div>
+                
                 <a href="{% url 'index' %}" class="btn btn-primary">Return to index</a>
             </article>
         </div>

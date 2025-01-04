@@ -59,3 +59,15 @@ class ArticleMedia(models.Model):
             raise ValidationError('Only one banner image is allowed per article')
 
         super().save(*args, **kwargs)
+
+class Comments(models.Model):
+    article = models.ForeignKey(Article, on_delete=models.CASCADE)
+    content = models.TextField(blank=False)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True) # Using this, if user gets deleted, comment can still be viewed
+    parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.content} posted by {self.user.username if self.user else 'Anonymous'}"
+
