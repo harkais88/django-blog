@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand, CommandParser
 from django.core.management import call_command
-from blog.models import Article,ArticleMedia,Tags
+from blog.models import Article,ArticleMedia,Tags,Comments
 from authentication.models import User
 from faker import Faker
 import random
@@ -15,6 +15,7 @@ class Command(BaseCommand):
         parser.add_argument("--articles", type=int, default=50, help="Number of articles to seed in database")
         parser.add_argument("--number_of_images_in_content", type=int, default=2, 
                             help="Number of images to be included in each content NOTE: Number of paragraphs will be number of images + 1")
+        parser.add_argument("--comments", type=int, default=100, help="Number of comments per article to be seeded in database")
 
     def generate_html(self, number_of_images = 2):
         """ Generates HTML code with image tags"""
@@ -88,6 +89,23 @@ class Command(BaseCommand):
             article.tags.set(random.sample(list(Tags.objects.all()), k=random.randint(1,Tags.objects.count())))
             self.stdout.write(
                 self.style.SUCCESS(f'Added following tags for article {title} by {author.username}: {", ".join(list(article.tags.values_list("name",flat=True)))}')) 
+
+            # Setting Random Comments
+            self.stdout.write(self.style.SUCCESS("Seeding Article Comments....."))
+            number_of_comments = options['comments']
+            for _ in range(number_of_comments):
+                content = faker.sentence(nb_words=50)
+                user = User.objects.order_by("?").first()
+                comment_parent_id_choice_list = [0] + list(Comments.objects.filter(article=article).values_list("id",flat=True))
+                comment_parent_id = random.choice(comment_parent_id_choice_list)
+                comment_parent = Comments.objects.get(id=comment_parent_id) if comment_parent_id != 0 else None
+                comment = Comments.objects.create(
+                    content=content,
+                    article=article,
+                    user=user,
+                    parent=comment_parent,
+                )
+            self.stdout.write(self.style.SUCCESS("Successfully Seeded Article Comments....."))
 
             # Setting Banner Image for Article Instance
             banner_img_url = f"https://picsum.photos/971/500.jpg?random={random.randint(1,1000)}"
