@@ -103,7 +103,17 @@
         color: #f8f9fa; /* Light color for dark mode */
     }
     
-      
+    .comment {
+        transition: transform 0.3s ease; /* Smooth transition */
+        display: inline-block;
+        transform-origin: left;
+        text-decoration: None;
+    }
+    
+    .comment:hover {
+        transform: scale(1.1);
+    }
+
 </style>
 {% endblock %}
 
@@ -112,25 +122,43 @@
         <div class="col-md-8" data-aos="fade-up">
             <article class="mb-4">
                 <img src="{{ image.image.url }}" alt="{{ article.title }}" class="img-fluid mb-3">
-                <h1 class="mb-4">{{ article.title }}</h1>
-                <div class="blog-post-meta"> 
+                <h1 class="mb-4 display-3 link-body-emphasis">{{ article.title }}</h1>
+                <div class="blog-post-meta">
                     <ul class="list-unstyled d-flex align-items-center">
-                        <li>Posted by {{ article.author }}</li>
-                        <li>Created on: {{ article.created_at }}</li>
+                        <li class="mr-4">
+                            <span class="text-primary font-weight-bold"><i class="bi bi-person"></i></span> {{ article.author }}
+                        </li>
+                        <li class="mr-4">
+                            <span class="font-weight-bold"><i class="bi bi-calendar-day text-primary"></i> {{ article.created_at|date:"F j, Y" }}</span> 
+                        </li>
+                        <li>
+                            <form action="{% url 'like_article' article.id %}" method="post">
+                                {% csrf_token %}
+                                <button type="submit" class="btn p-0">
+                                    <i class="text-primary bi bi-hand-thumbs-up{% if true_user_article_like.status %}-fill{% endif %}"></i>
+                                    <span class="sr-only text-primary">
+                                        <span class="font-weight-bold text-secondary">{{ article_likes_count }}</span> 
+                                    </span>
+                                </button>
+                            </form>
+                        </li>
+                        <li>
+                            <i class="text-primary bi bi-chat-dots"></i> {{comment_counts}}
+                        </li>
                     </ul>
                 </div>
                 <p>{{ article.content|add_class_to_images:"img-fluid"|safe }}</p>
                 
                 <!-- Post Comments Section -->
                 <h4>Add a comment</h4>
-                <form action="{% url "comment" article_id=article.id%}" method="post" class="form-group">
+                <form action="{% url 'comment' article_id=article.id%}" method="post" class="form-group">
                     {% csrf_token %}
                     {{comments_form.as_p}}
                     <button type="submit" class="btn btn-primary form-control">Post</button>
                 </form>
 
                 <!-- Comments Section -->
-                <h4 class="mt-2 mb-2">All Comments</h4>
+                <h4 class="mt-4 mb-2 display-5">All Comments</h4>
                 {% if comments %}
                 <div class="row mt-3">
                     {% for comment in comments %}
@@ -167,11 +195,12 @@
                             </div>
                   
                             {% if comment.children.all %}
-                            <button hx-get="{% url "load_replies" article_id=article.id comment_id=comment.id %}" 
+                            <p hx-get="{% url "load_replies" article_id=article.id comment_id=comment.id %}" 
                                     hx-swap="innerHTML" hx-target="#replies-{{comment.id}}"
-                                    x-show="replies_show" @click="replies_show = false">
-                                Show replies
-                            </button>
+                                    x-show="replies_show" @click="replies_show = false"
+                                    class="mt-2 comment">
+                                <i class="bi bi-arrow-down text-primary"></i>Show {{comment.children.count}} replies
+                            </p>
 
                             <div id="replies-{{comment.id}}" x-show="!replies_show" x-transition></div>
                             {% endif %}

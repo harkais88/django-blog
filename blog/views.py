@@ -167,6 +167,8 @@ def details(request,article_id):
     if request.headers.get('Hx-Request'):
         return render(request, "blog/extra_comments.html", {"article": article, "comments": page_obj, "comments_form": comments_form})
 
+    total_likes = article.likes.filter(status=True).count()
+
     context = {
         'article': article,
         'image': ArticleMedia.objects.get(article__id = article_id,type="BANNER"),
@@ -174,7 +176,10 @@ def details(request,article_id):
         'related_articles': Article.objects.filter(tags = article.tags.order_by("?").first()).exclude(id = article_id)[:5],
         'comments_form': comments_form,
         'comments': page_obj,
-        'true_user': request.user,        
+        'true_user': request.user,
+        'true_user_article_like': article.likes.get_or_create(created_by=request.user)[0],
+        'article_likes_count': total_likes if total_likes is not None else 0,     
+        'comment_counts': Comments.objects.filter(article_id=article_id).count(),
     }
     return render(request, 'blog/details.html', context)
 
@@ -304,7 +309,7 @@ def likes(request, article_id, comment_id=None):
 
             if comment is not None:
                 like = Likes.objects.filter(
-                    content_object=comment,
+                    comment=comment,
                     created_by=request.user
                 ).first()
 
@@ -326,7 +331,7 @@ def likes(request, article_id, comment_id=None):
         article = Article.objects.filter(id=article_id).first()
         if article is not None:
             like = Likes.objects.filter(
-                content_object=article,
+                article=article,
                 created_by=request.user
             ).first()
 

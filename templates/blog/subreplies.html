@@ -34,11 +34,12 @@
             </form>
         </div>
         {% if sub_reply.children.all %}
-            <button hx-get="{% url "load_replies" article_id=article.id comment_id=sub_reply.id %}" 
+            <p hx-get="{% url "load_replies" article_id=article.id comment_id=sub_reply.id %}" 
                     hx-swap="innerHTML" hx-target="#replies-{{sub_reply.id}}"
-                    x-show="replies_hidden" @click="replies_hidden = false">
-                Show replies
-            </button>
+                    x-show="replies_hidden" @click="replies_hidden = false"
+                    class="mt-2 comment">
+                <i class="bi bi-arrow-down text-primary"></i>Show {{sub_reply.children.count}} replies
+            </p>
 
             <div id="replies-{{sub_reply.id}}" x-show="!replies_hidden" x-transition></div>
         {% endif %}

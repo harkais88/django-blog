@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="{% static 'vendor/bootstrap/css/bootstrap.min.css'%}">
     <link rel="stylesheet" href="{% static "vendor/aos/aos.css" %}">
     <link rel="stylesheet" href="{% static "vendor/bootstrap-icons/font/bootstrap-icons.css" %}">
+    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/persist@3.x.x/dist/cdn.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     <style>
@@ -27,7 +28,7 @@
     </style>
     {% block head_scripts %}{% endblock %}
 </head>
-<body x-data="{theme: 'dark'}" :data-bs-theme="theme">
+<body x-data="{theme: $persist('dark')}" :data-bs-theme="theme">
     <header data-aos="fade-in">
         <nav class="navbar navbar-expand-md fixed-top bg-body-tertiary">
             <div class="container-fluid">
