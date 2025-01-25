@@ -1,16 +1,40 @@
+import os
 from django.db import models
 from django.core.validators import FileExtensionValidator
 from django.core.exceptions import ValidationError
-from authentication.models import User
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from tinymce.models import HTMLField
+from authentication.models import User
 from .utils import PathAndRename, validate_image_size
-import os
 
 class Tags(models.Model):
     name = models.CharField(max_length=50,unique=True)
 
     def __str__(self):
         return self.name
+
+class Likes(models.Model):
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    status = models.BooleanField(default=True)
+    created_on = models.DateTimeField(auto_now_add=True)
+    updated_on = models.DateTimeField(auto_now=True)
+
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveBigIntegerField()
+    content_object = GenericForeignKey("content_type", "object_id")
+
+    def __str__(self):
+        return f'Liked by {self.created_by.username} on {self.content_type.app_label} id {self.content_object.id}'
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["content_type", "object_id"]),
+        ]
+        constraints = [
+            models.UniqueConstraint(fields=['content_type','object_id','created_by'],
+            name='likes_uq_content_type_created_by')
+        ]
 
 class Article(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -19,6 +43,8 @@ class Article(models.Model):
     tags = models.ManyToManyField(Tags, related_name='articles', blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
+
+    likes = GenericRelation(Likes, related_query_name='article')
 
     def __str__(self):
         return f"{self.title} posted by {self.author} on {self.created_at}"
@@ -67,6 +93,8 @@ class Comments(models.Model):
     parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    like = GenericRelation(Likes, related_query_name='comment')
 
     def __str__(self):
         return f"{self.content} posted by {self.user.username if self.user else 'Anonymous'}"

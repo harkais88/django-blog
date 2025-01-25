@@ -2,15 +2,15 @@ import base64
 import os
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import ArticleForm,ArticleMediaForm, CommentsForm
-from .models import Article,ArticleMedia,Tags,Comments
-from authentication.models import User
-from .utils import parse_content
 from django.core.files.base import ContentFile
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.contrib import messages
 from django.http import Http404, HttpResponse
+from .forms import ArticleForm,ArticleMediaForm, CommentsForm
+from authentication.models import User
+from .utils import parse_content
+from .models import Article,ArticleMedia,Tags,Comments,Likes
 
 @login_required(login_url="login")
 def index(request):
@@ -293,3 +293,57 @@ def load_replies(request, article_id, comment_id):
         comments_form = CommentsForm()
 
         return render(request, "blog/subreplies.html", {"article": article,"replies": comment.children.all(),"comments_form": comments_form})
+    
+def likes(request, article_id, comment_id=None):
+    if request.method == 'POST':
+        if comment_id is not None:
+            comment = Comments.objects.filter(
+                id=comment_id,
+                article__id=article_id
+            ).first()
+
+            if comment is not None:
+                like = Likes.objects.filter(
+                    content_object=comment,
+                    created_by=request.user
+                ).first()
+
+                if like is None:
+                    like = Likes.objects.create(
+                        content_object=comment,
+                        created_by=request.user
+                    )
+
+                    return redirect(details,article_id)
+                
+                else:
+                    # Could add check to prevent author from liking his/her own post
+                    like.status = not like.status
+                    like.save()
+
+                    return redirect(details,article_id)
+                
+        article = Article.objects.filter(id=article_id).first()
+        if article is not None:
+            like = Likes.objects.filter(
+                content_object=article,
+                created_by=request.user
+            ).first()
+
+            if like is None:
+                like = Likes.objects.create(
+                    content_object=article,
+                    created_by=request.user
+                )
+
+                return redirect(details,article_id)
+            
+            else:
+                like.status = not like.status
+                like.save()
+
+                return redirect(details,article_id)
+            
+        else:
+            return Http404('Valid Article ID not passed!')
+

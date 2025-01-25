@@ -9,7 +9,7 @@ path_and_rename = PathAndRename("profile")
 
 class User(AbstractUser):
     email = models.EmailField(unique=True)
-    middle_name = models.CharField(max_length=150)
+    middle_name = models.CharField(max_length=150,blank=True,null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     profile_picture = models.ImageField(upload_to=path_and_rename, height_field=None, width_field=None, max_length=None,
